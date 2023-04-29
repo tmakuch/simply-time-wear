@@ -21,8 +21,6 @@ import androidx.wear.watchface.complications.rendering.ComplicationDrawable
 import dev.makuch.simplyTime.R
 
 /**
- * Color resources and drawable id needed to render the watch face. Translated from
- * [ColorStyleIdAndResourceIds] constant ids to actual resources with context at run time.
  *
  * This is only needed when the watch face is active.
  *
@@ -45,7 +43,7 @@ data class WatchFaceColorPalette(
 ) {
     companion object {
         /**
-         * Converts [ColorStyleIdAndResourceIds] to [WatchFaceColorPalette].
+         * Converts something that was removed to [WatchFaceColorPalette].
          */
         fun getWatchFaceColorPalette(
             context: Context,

@@ -19,12 +19,9 @@ import androidx.wear.watchface.style.CurrentUserStyleRepository
 import androidx.wear.watchface.style.UserStyle
 import androidx.wear.watchface.style.UserStyleSetting
 import androidx.wear.watchface.style.WatchFaceLayer
-import dev.makuch.simplyTime.data.watchface.ColorStyleIdAndResourceIds
 import dev.makuch.simplyTime.data.watchface.WatchFaceColorPalette
 import dev.makuch.simplyTime.data.watchface.WatchFaceData
-import dev.makuch.simplyTime.utils.COLOR_STYLE_SETTING
-import dev.makuch.simplyTime.utils.DRAW_HOUR_PIPS_STYLE_SETTING
-import dev.makuch.simplyTime.utils.WATCH_HAND_LENGTH_STYLE_SETTING
+import dev.makuch.simplyTime.utils.SHOW_DIVISION_RING_SETTING
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,8 +29,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.ZonedDateTime
-import kotlin.math.cos
-import kotlin.math.sin
 
 // Default for how long each frame is displayed at expected frame rate.
 private const val FRAME_PERIOD_MS_DEFAULT: Long = 16L
@@ -131,40 +126,12 @@ class DigitalWatchCanvasRenderer(
         // Loops through user style and applies new values to watchFaceData.
         for (options in userStyle) {
             when (options.key.id.toString()) {
-                COLOR_STYLE_SETTING -> {
-                    val listOption = options.value as
-                            UserStyleSetting.ListUserStyleSetting.ListOption
-
-                    newWatchFaceData = newWatchFaceData.copy(
-                        activeColorStyle = ColorStyleIdAndResourceIds.getColorStyleConfig(
-                            listOption.id.toString()
-                        )
-                    )
-                }
-                DRAW_HOUR_PIPS_STYLE_SETTING -> {
+                SHOW_DIVISION_RING_SETTING -> {
                     val booleanValue = options.value as
                             UserStyleSetting.BooleanUserStyleSetting.BooleanOption
 
                     newWatchFaceData = newWatchFaceData.copy(
-                        drawHourPips = booleanValue.value
-                    )
-                }
-                WATCH_HAND_LENGTH_STYLE_SETTING -> {
-                    val doubleValue = options.value as
-                            UserStyleSetting.DoubleRangeUserStyleSetting.DoubleRangeOption
-
-                    // The arm lengths are usually only calculated the first time the watch face is
-                    // loaded to reduce the ops in the onDraw(). Because we updated the minute hand
-                    // watch length, we need to trigger a recalculation.
-                    armLengthChangedRecalculateClockHands = true
-
-                    // Updates length of minute hand based on edits from user.
-                    val newMinuteHandDimensions = newWatchFaceData.minuteHandDimensions.copy(
-                        lengthFraction = doubleValue.value.toFloat()
-                    )
-
-                    newWatchFaceData = newWatchFaceData.copy(
-                        minuteHandDimensions = newMinuteHandDimensions
+                        showDivisionRing = booleanValue.value
                     )
                 }
             }
@@ -233,21 +200,6 @@ class DigitalWatchCanvasRenderer(
 
         if (renderParameters.watchFaceLayers.contains(WatchFaceLayer.COMPLICATIONS_OVERLAY)) {
             drawClockHands(canvas, bounds, zonedDateTime)
-        }
-
-        if (renderParameters.drawMode == DrawMode.INTERACTIVE &&
-            renderParameters.watchFaceLayers.contains(WatchFaceLayer.BASE) &&
-            watchFaceData.drawHourPips
-        ) {
-            drawNumberStyleOuterElement(
-                canvas,
-                bounds,
-                watchFaceData.numberRadiusFraction,
-                watchFaceData.numberStyleOuterCircleRadiusFraction,
-                watchFaceColors.activeOuterElementColor,
-                watchFaceData.numberStyleOuterCircleRadiusFraction,
-                watchFaceData.gapBetweenOuterCircleAndBorderFraction
-            )
         }
     }
 
@@ -424,49 +376,6 @@ class DigitalWatchCanvasRenderer(
             )
         }
         return path
-    }
-
-    private fun drawNumberStyleOuterElement(
-        canvas: Canvas,
-        bounds: Rect,
-        numberRadiusFraction: Float,
-        outerCircleStokeWidthFraction: Float,
-        outerElementColor: Int,
-        numberStyleOuterCircleRadiusFraction: Float,
-        gapBetweenOuterCircleAndBorderFraction: Float
-    ) {
-        // Draws text hour indicators (12, 3, 6, and 9).
-        val textBounds = Rect()
-        textPaint.color = outerElementColor
-        for (i in 0 until 4) {
-            val rotation = 0.5f * (i + 1).toFloat() * Math.PI
-            val dx = sin(rotation).toFloat() * numberRadiusFraction * bounds.width().toFloat()
-            val dy = -cos(rotation).toFloat() * numberRadiusFraction * bounds.width().toFloat()
-            textPaint.getTextBounds(HOUR_MARKS[i], 0, HOUR_MARKS[i].length, textBounds)
-            canvas.drawText(
-                HOUR_MARKS[i],
-                bounds.exactCenterX() + dx - textBounds.width() / 2.0f,
-                bounds.exactCenterY() + dy + textBounds.height() / 2.0f,
-                textPaint
-            )
-        }
-
-        // Draws dots for the remain hour indicators between the numbers above.
-        outerElementPaint.strokeWidth = outerCircleStokeWidthFraction * bounds.width()
-        outerElementPaint.color = outerElementColor
-        canvas.save()
-        for (i in 0 until 12) {
-            if (i % 3 != 0) {
-                drawTopMiddleCircle(
-                    canvas,
-                    bounds,
-                    numberStyleOuterCircleRadiusFraction,
-                    gapBetweenOuterCircleAndBorderFraction
-                )
-            }
-            canvas.rotate(360.0f / 12.0f, bounds.exactCenterX(), bounds.exactCenterY())
-        }
-        canvas.restore()
     }
 
     /** Draws the outer circle on the top middle of the given bounds. */

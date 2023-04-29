@@ -17,7 +17,7 @@ package dev.makuch.simplyTime.data.watchface
 
 // Defaults for the watch face. All private values aren't editable by the user, so they don't need
 // to be exposed as settings defaults.
-const val DRAW_HOUR_PIPS_DEFAULT = true
+const val SHOW_DIVISION_RING_DEFAULT = true
 
 private const val HOUR_HAND_LENGTH_FRACTION = 0.21028f
 private const val HOUR_HAND_WIDTH_FRACTION = 0.02336f
@@ -50,8 +50,7 @@ private const val NUMBER_RADIUS_FRACTION = 0.45f
  * Represents all data needed to render an analog watch face.
  */
 data class WatchFaceData(
-    val activeColorStyle: ColorStyleIdAndResourceIds = ColorStyleIdAndResourceIds.RED,
-    val drawHourPips: Boolean = DRAW_HOUR_PIPS_DEFAULT,
+    val showDivisionRing: Boolean = SHOW_DIVISION_RING_DEFAULT,
     val hourHandDimensions: ArmDimensions = ArmDimensions(
         lengthFraction = HOUR_HAND_LENGTH_FRACTION,
         widthFraction = HOUR_HAND_WIDTH_FRACTION,
