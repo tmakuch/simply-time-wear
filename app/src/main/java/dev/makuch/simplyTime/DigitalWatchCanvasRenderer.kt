@@ -18,6 +18,7 @@ import androidx.wear.watchface.style.UserStyleSetting
 import dev.makuch.simplyTime.data.watchface.WatchFaceColorPalette
 import dev.makuch.simplyTime.data.watchface.WatchFaceData
 import dev.makuch.simplyTime.utils.SHOW_DIVISION_RING_SETTING
+import dev.makuch.simplyTime.utils.mapDayOfWeek
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import kotlinx.coroutines.CoroutineScope
@@ -57,8 +58,8 @@ class DigitalWatchCanvasRenderer(
         CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val fontHeightOffsetModificator: Float = (1 / 2.8).toFloat()
-    private val textMargin: Float =
-        context.resources.getDimensionPixelSize(R.dimen.text_margin).toFloat()
+    private val topMargin: Float =
+        context.resources.getDimensionPixelSize(R.dimen.top_margin).toFloat()
 
     // Represents all data needed to render the watch face. All value defaults are constants. Only
     // three values are changeable by the user (color scheme, ticks being rendered, and length of
@@ -88,6 +89,13 @@ class DigitalWatchCanvasRenderer(
     private val secondaryTextPaint = Paint().apply {
         isAntiAlias = true
         textSize = context.resources.getDimensionPixelSize(R.dimen.secondary_font_size).toFloat()
+        color = watchFaceColors.activeFrontendColor
+        typeface = context.resources.getFont(R.font.digital)
+    }
+
+    private val tertiaryTextPaint = Paint().apply {
+        isAntiAlias = true
+        textSize = context.resources.getDimensionPixelSize(R.dimen.tertiary_font_size).toFloat()
         color = watchFaceColors.activeFrontendColor
         typeface = context.resources.getFont(R.font.digital)
     }
@@ -179,6 +187,7 @@ class DigitalWatchCanvasRenderer(
         if (!isAmbient) {
             drawComplications(canvas, zonedDateTime)
             drawSeconds(canvas, bounds, localTime, heightOffset)
+            drawDate(canvas, bounds, zonedDateTime, heightOffset)
         }
     }
 
@@ -198,7 +207,7 @@ class DigitalWatchCanvasRenderer(
         isAmbient: Boolean,
         heightOffset: Float
     ) {
-        val minutes = java.lang.String.format("%02d", localTime.minute)
+        val minutes = String.format("%02d", localTime.minute)
         val hours = localTime.hour.toString()
 
         val isAnyOtherHalfOfSecond = localTime.nano > 500000000
@@ -237,13 +246,13 @@ class DigitalWatchCanvasRenderer(
         localTime: LocalTime,
         heightOffset: Float
     ) {
-        val seconds = java.lang.String.format("%02d", localTime.second)
+        val seconds = String.format("%02d", localTime.second)
 
         val isAnyOtherHalfOfSecond = localTime.nano > 500000000
 
 
         val yPosition =
-            bounds.centerY().toFloat() + heightOffset - textMargin - secondaryTextPaint.textSize
+            bounds.centerY().toFloat() + heightOffset - topMargin - secondaryTextPaint.textSize
         val secondaryColonWidth = secondaryTextPaint.measureText(":")
 
         if (isAnyOtherHalfOfSecond) {
@@ -260,6 +269,24 @@ class DigitalWatchCanvasRenderer(
             bounds.centerX() + secondaryColonWidth,
             yPosition,
             secondaryTextPaint
+        )
+    }
+
+    private fun drawDate(
+        canvas: Canvas,
+        bounds: Rect,
+        zonedDateTime: ZonedDateTime,
+        heightOffset: Float
+    ) {
+        val dayOfMonth = zonedDateTime.dayOfMonth
+        val dayOfWeek = mapDayOfWeek(zonedDateTime.dayOfWeek)
+        val text = "$dayOfWeek.$dayOfMonth"
+
+        canvas.drawText(
+            text,
+            bounds.width() * 0.3f,
+            bounds.centerY().toFloat() + heightOffset + tertiaryTextPaint.textSize,
+            tertiaryTextPaint
         )
     }
 
