@@ -62,7 +62,7 @@
             android:id="@+id/division_ring_switch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/watch_ticks"
+            android:drawableStart="@drawable/division_ring"
             android:drawablePadding="2dp"
             android:gravity="start|center_vertical"
             android:onClick="onClickDivisionRingSwitch"
