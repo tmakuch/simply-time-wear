@@ -13,13 +13,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import kotlinx.coroutines.yield
 
 class WatchFaceConfigStateHolder(
     private val scope: CoroutineScope,
@@ -38,25 +35,13 @@ class WatchFaceConfigStateHolder(
 
             extractsUserStyles(editorSession.userStyleSchema)
 
-//            editorSession.userStyle.collect { userStyle ->
-//                emit(
-//                    EditWatchFaceUiState.Success(
-//                        getConfigData(userStyle)
-//                    )
-//                )
-//            }
-
-            emitAll(
-                combine(
-                    editorSession.userStyle,
-                    editorSession.complicationsPreviewData
-                ) { userStyle, complicationsPreviewData ->
-                    yield()
+            editorSession.userStyle.collect { userStyle ->
+                emit(
                     EditWatchFaceUiState.Success(
                         getConfigData(userStyle)
                     )
-                }
-            )
+                )
+            }
         }
             .stateIn(
                 scope + Dispatchers.Main.immediate,

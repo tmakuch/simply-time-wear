@@ -73,7 +73,7 @@ class WatchFaceConfigActivity : ComponentActivity() {
         binding.showOnAmbientSwitch.isChecked = userStylesAndPreview.showOnAmbient
 
         binding.showRingSwitch.isEnabled = true
-        binding.showOnAmbientSwitch.isEnabled = true
+        binding.showOnAmbientSwitch.isEnabled = userStylesAndPreview.showRing
     }
 
     fun onClickComplicationButton(view: View) {
@@ -84,6 +84,8 @@ class WatchFaceConfigActivity : ComponentActivity() {
     fun onClickShowRingSwitch(view: View) {
         Log.d(TAG, "onClickDivisionRingSwitch() $view")
         stateHolder.setDivisionRing(binding.showRingSwitch.isChecked)
+
+        binding.showOnAmbientSwitch.isEnabled = binding.showRingSwitch.isChecked
     }
 
     fun onClickShowOnAmbientSwitch(view: View) {
