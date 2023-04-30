@@ -1,8 +1,7 @@
-Simply Time Watchface Wear 3.5(?)
+Simply Time Watchface
 ===============================
-Cześć Dima :) 
 
-Najważniejsze rzeczy:
-* wip, najświeższy commit się nawet nie odpala w tym momencie
-* czcionka jest płatna dla nieprywatnego użytku (plus ją modyfikowałem, więc nie opubliczniamy tego repo)
-* to repo to tak naprawdę czyszczone https://github.com/android/wear-os-samples/tree/main/WatchFaceKotlin
+My private watchface, started from https://github.com/android/wear-os-samples/tree/main/WatchFaceKotlin.
+
+For you to run it, you need to get fonts and put them into app/src/.../res/font folder. To be exact two fonts - digital.ttf and digital_empty.ttf (names are customs), one as main font and another for when your screen is ambient.
+
