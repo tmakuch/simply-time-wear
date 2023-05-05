@@ -25,8 +25,10 @@ import androidx.wear.watchface.WatchFaceType
 import androidx.wear.watchface.WatchState
 import androidx.wear.watchface.style.CurrentUserStyleRepository
 import androidx.wear.watchface.style.UserStyleSchema
+import dev.makuch.simplyTime.data.NotificationBroadcastReceiver
 import dev.makuch.simplyTime.utils.createComplicationSlotManager
 import dev.makuch.simplyTime.utils.createUserStyleSchema
+
 
 class DigitalWatchFaceService : WatchFaceService() {
 
@@ -54,7 +56,8 @@ class DigitalWatchFaceService : WatchFaceService() {
             watchState = watchState,
             complicationSlotsManager = complicationSlotsManager,
             currentUserStyleRepository = currentUserStyleRepository,
-            canvasType = CanvasType.HARDWARE
+            canvasType = CanvasType.HARDWARE,
+            notificationReceiver = NotificationBroadcastReceiver()
         )
 
         return WatchFace(

@@ -15,6 +15,7 @@ import androidx.wear.watchface.style.CurrentUserStyleRepository
 import androidx.wear.watchface.style.UserStyle
 import androidx.wear.watchface.style.UserStyleSetting
 import dev.makuch.simplyTime.data.ColorPalette
+import dev.makuch.simplyTime.data.NotificationBroadcastReceiver
 import dev.makuch.simplyTime.data.SettingsData
 import dev.makuch.simplyTime.data.Paints
 import dev.makuch.simplyTime.utils.SHOW_ON_AMBIENT_SETTING
@@ -39,7 +40,8 @@ class DigitalWatchCanvasRenderer(
     watchState: WatchState,
     private val complicationSlotsManager: ComplicationSlotsManager,
     currentUserStyleRepository: CurrentUserStyleRepository,
-    canvasType: Int
+    canvasType: Int,
+    private val notificationReceiver: NotificationBroadcastReceiver
 ) : Renderer.CanvasRenderer2<DigitalWatchCanvasRenderer.DigitalSharedAssets>(
     surfaceHolder,
     currentUserStyleRepository,
@@ -150,9 +152,11 @@ class DigitalWatchCanvasRenderer(
         val isAmbient = renderParameters.drawMode == DrawMode.AMBIENT
         val heightOffset = paints.textPaint.textSize * fontHeightOffsetModificator
 
+        val areThereNotifications = notificationReceiver.notificationCount > 0
+
         drawMainTime(canvas, bounds, localTime, paints, heightOffset, isAmbient)
 
-        if (settingsData.showRing && (!isAmbient || settingsData.showOnAmbient)) {
+        if ((areThereNotifications && settingsData.showRing) && (!isAmbient || settingsData.showOnAmbient)) {
             drawRing(canvas, bounds, paints)
         }
 

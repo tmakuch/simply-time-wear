@@ -4,6 +4,7 @@
     <string name="app_name" translatable="false">Simply Time on WearOs</string>
     <string name="digital_watch_face_name" translatable="false">Digital Simply Time</string>
     <string name="settings_activity_label">Config</string>
+    <string name="notification_service_name">Simply Time Notification Service</string>
 
     <!-- complication setting //complication so no need for custom setting -->
     <string name="set_complication_label">Set\nComplication</string>
