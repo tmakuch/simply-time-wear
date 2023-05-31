@@ -27,7 +27,7 @@ fun drawMainTime(
     isAmbient: Boolean
 ) {
     val minutes = String.format("%02d", localTime.minute)
-    val hours = localTime.hour.toString()
+    val hours = String.format("%02d", localTime.hour)
 
     val isAnyOtherHalfOfSecond = localTime.nano > 500000000
 
