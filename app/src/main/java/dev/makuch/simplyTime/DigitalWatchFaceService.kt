@@ -25,10 +25,16 @@ import androidx.wear.watchface.WatchFaceType
 import androidx.wear.watchface.WatchState
 import androidx.wear.watchface.style.CurrentUserStyleRepository
 import androidx.wear.watchface.style.UserStyleSchema
+import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.MessageEvent
+import dev.makuch.simplyTime.data.ExtraContext
 import dev.makuch.simplyTime.utils.createComplicationSlotManager
 import dev.makuch.simplyTime.utils.createUserStyleSchema
 
-class DigitalWatchFaceService : WatchFaceService() {
+class DigitalWatchFaceService : WatchFaceService(), MessageClient.OnMessageReceivedListener {
+    private val extraContext = ExtraContext(
+        notificationCount = 0
+    )
 
     override fun createUserStyleSchema(): UserStyleSchema =
         createUserStyleSchema(context = applicationContext)
@@ -54,7 +60,8 @@ class DigitalWatchFaceService : WatchFaceService() {
             watchState = watchState,
             complicationSlotsManager = complicationSlotsManager,
             currentUserStyleRepository = currentUserStyleRepository,
-            canvasType = CanvasType.HARDWARE
+            canvasType = CanvasType.HARDWARE,
+            extraContext = this.extraContext
         )
 
         return WatchFace(
@@ -65,5 +72,9 @@ class DigitalWatchFaceService : WatchFaceService() {
 
     companion object {
         const val TAG = "DigitalWatchFaceService"
+    }
+
+    override fun onMessageReceived(p0: MessageEvent) {
+        this.extraContext.notificationCount = 1;
     }
 }
